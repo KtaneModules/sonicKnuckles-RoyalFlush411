@@ -1,0 +1,36 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 615501dbe4f3fe94fbf4b564abb10237, type: 3}
+  m_Name: ModConfig
+  m_EditorClassIdentifier: 
+  id: sonicKnuckles
+  title: Sonic & Knuckles
+  description: 'Sonic & Knuckles 1.03
+
+    Sonic the Hedgehog was a popular 16-bit video game from... Wait a minute; this
+    isn''t Sonic the Hedgehog. Are SEGA on commission or something?
+
+
+    Module ID: sonicKnuckles
+
+
+    Created by: Royal_Flu$h
+
+
+    Thanks to Elias5891, Timwi & Riverbui for their feedback and ideas.
+
+    Thanks to AshTheBash & Elias5891 for playing the sound game.
+
+
+    Manual available here: https://ktane.timwi.de/HTML/Sonic%20%26%20Knuckles.html'
+  version: 1.03
+  outputFolder: build
+  previewImage: {fileID: 2800000, guid: 4a4d9613361294eadac1600d6978c9a4, type: 3}
