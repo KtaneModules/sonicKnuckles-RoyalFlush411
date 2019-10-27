@@ -945,6 +945,7 @@ public class sonicKnucklesScript : MonoBehaviour
                     {
                         if (Regex.IsMatch(parameters[1], @"^\s*badnik\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                         {
+                            yield return null;
                             if (badniks[backgroundIndex].gameObject.activeSelf)
                             {
                                 while ((secondsCount != (ringCount % 20)) && (secondsCount != (ringCount % 20) + 20) && (secondsCount != (ringCount % 20) + 40))
@@ -961,6 +962,7 @@ public class sonicKnucklesScript : MonoBehaviour
                         }
                         if (Regex.IsMatch(parameters[1], @"^\s*hero\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                         {
+                            yield return null;
                             if (heroes[heroIndex].gameObject.activeSelf)
                             {
                                 while ((secondsCount != (ringCount % 20)) && (secondsCount != (ringCount % 20) + 20) && (secondsCount != (ringCount % 20) + 40))
@@ -977,6 +979,7 @@ public class sonicKnucklesScript : MonoBehaviour
                         }
                         if (Regex.IsMatch(parameters[1], @"^\s*monitor\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                         {
+                            yield return null;
                             if (monitors[backgroundIndex].gameObject.activeSelf)
                             {
                                 while ((secondsCount != (ringCount % 20)) && (secondsCount != (ringCount % 20) + 20) && (secondsCount != (ringCount % 20) + 40))
@@ -1002,6 +1005,7 @@ public class sonicKnucklesScript : MonoBehaviour
             {
                 if (Regex.IsMatch(parameters[1], @"^\s*badnik\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                 {
+                    yield return null;
                     if (badniks[backgroundIndex].gameObject.activeSelf)
                     {
                         while ((secondsCount == (ringCount % 20)) || (secondsCount == (ringCount % 20) + 20) || (secondsCount == (ringCount % 20) + 40))
@@ -1017,6 +1021,7 @@ public class sonicKnucklesScript : MonoBehaviour
                 }
                 if (Regex.IsMatch(parameters[1], @"^\s*hero\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                 {
+                    yield return null;
                     if (heroes[heroIndex].gameObject.activeSelf)
                     {
                         while ((secondsCount == (ringCount % 20)) || (secondsCount == (ringCount % 20) + 20) || (secondsCount == (ringCount % 20) + 40))
@@ -1032,6 +1037,7 @@ public class sonicKnucklesScript : MonoBehaviour
                 }
                 if (Regex.IsMatch(parameters[1], @"^\s*monitor\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                 {
+                    yield return null;
                     if (monitors[backgroundIndex].gameObject.activeSelf)
                     {
                         while ((secondsCount == (ringCount % 20)) || (secondsCount == (ringCount % 20) + 20) || (secondsCount == (ringCount % 20) + 40))
@@ -1056,6 +1062,7 @@ public class sonicKnucklesScript : MonoBehaviour
                 {
                     if (boss.gameObject.activeSelf)
                     {
+                        yield return null;
                         int temp = 0;
                         int.TryParse(parameters[1], out temp);
                         for(int i = 0; i < temp; i++)
@@ -1092,6 +1099,7 @@ public class sonicKnucklesScript : MonoBehaviour
                 {
                     if (boss.gameObject.activeSelf)
                     {
+                        yield return null;
                         int temp = 0;
                         int.TryParse(parameters[1], out temp);
                         for (int i = 0; i < temp; i++)
