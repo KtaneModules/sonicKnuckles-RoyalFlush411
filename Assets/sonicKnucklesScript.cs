@@ -917,7 +917,7 @@ public class sonicKnucklesScript : MonoBehaviour
     }
 
     #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"!{0} start [Starts the module] | !{0} press <badnik/monitor/hero> [Presses the specified object] | !{0} press <badnik/monitor/hero> at <##> [Presses the specified object when the seconds digits on the game's timer is '##'] | !{0} even/odd <#> [Presses Dr. Robotnik '#' times when the last digit of the game's timer is even or odd]";
+    private readonly string TwitchHelpMessage = @"!{0} start [Starts the module] | !{0} press <badnik/monitor/hero> [Presses the specified object] | !{0} press <badnik/monitor/hero> at <##> [Presses the specified object when the seconds digits on the game's timer is '##', '##'+or-20, or '##'+or-40] | !{0} even/odd <#> [Presses Dr. Robotnik '#' times when the last digit of the game's timer is even or odd]";
     #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
     {
@@ -943,12 +943,14 @@ public class sonicKnucklesScript : MonoBehaviour
                 {
                     if (cmdIsValid(parameters[3]))
                     {
+                        int time = 0;
+                        int.TryParse(parameters[3], out time);
                         if (Regex.IsMatch(parameters[1], @"^\s*badnik\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                         {
                             yield return null;
                             if (badniks[backgroundIndex].gameObject.activeSelf)
                             {
-                                while ((secondsCount != (ringCount % 20)) && (secondsCount != (ringCount % 20) + 20) && (secondsCount != (ringCount % 20) + 40))
+                                while ((secondsCount != time - 40) && (secondsCount != time - 20) && (secondsCount != time) && (secondsCount != time + 20) && (secondsCount != time + 40))
                                 {
                                     yield return new WaitForSeconds(0.1f);
                                     yield return "trycancel The Badnik press was cancelled due to a cancel request.";
@@ -965,7 +967,7 @@ public class sonicKnucklesScript : MonoBehaviour
                             yield return null;
                             if (heroes[heroIndex].gameObject.activeSelf)
                             {
-                                while ((secondsCount != (ringCount % 20)) && (secondsCount != (ringCount % 20) + 20) && (secondsCount != (ringCount % 20) + 40))
+                                while ((secondsCount != time - 40) && (secondsCount != time - 20) && (secondsCount != time) && (secondsCount != time + 20) && (secondsCount != time + 40))
                                 {
                                     yield return new WaitForSeconds(0.1f);
                                     yield return "trycancel The Hero press was cancelled due to a cancel request.";
@@ -982,7 +984,7 @@ public class sonicKnucklesScript : MonoBehaviour
                             yield return null;
                             if (monitors[backgroundIndex].gameObject.activeSelf)
                             {
-                                while ((secondsCount != (ringCount % 20)) && (secondsCount != (ringCount % 20) + 20) && (secondsCount != (ringCount % 20) + 40))
+                                while ((secondsCount != time - 40) && (secondsCount != time - 20) && (secondsCount != time) && (secondsCount != time + 20) && (secondsCount != time + 40))
                                 {
                                     yield return new WaitForSeconds(0.1f);
                                     yield return "trycancel The Monitor press was cancelled due to a cancel request.";
