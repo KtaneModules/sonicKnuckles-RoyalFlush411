@@ -917,7 +917,7 @@ public class sonicKnucklesScript : MonoBehaviour
     }
 
     #pragma warning disable 414
-    private readonly string TwitchHelpMessage = @"!{0} start [Starts the module] | !{0} press <badnik/monitor/hero> [Presses the specified object] | !{0} press <badnik/monitor/hero> at <##> [Presses the specified object when the seconds digits on the game's timer is '##', '##'+or-20, or '##'+or-40] | !{0} even/odd <#> [Presses Dr. Robotnik '#' times when the last digit of the game's timer is even or odd]";
+    private readonly string TwitchHelpMessage = @"!{0} start [Starts the module] | !{0} press <badnik/monitor/hero> [Presses the specified object] | !{0} press <badnik/monitor/hero> at <##> [Presses the specified object when the seconds digits on the game's timer are '##', '##'+or-20, or '##'+or-40] | !{0} even/odd <#> [Presses Dr. Robotnik '#' times when the last digit of the game's timer is even or odd]";
     #pragma warning restore 414
     IEnumerator ProcessTwitchCommand(string command)
     {
@@ -941,13 +941,13 @@ public class sonicKnucklesScript : MonoBehaviour
             {
                 if(Regex.IsMatch(parameters[2], @"^\s*at\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                 {
+                    yield return null;
                     if (cmdIsValid(parameters[3]))
                     {
                         int time = 0;
                         int.TryParse(parameters[3], out time);
                         if (Regex.IsMatch(parameters[1], @"^\s*badnik\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                         {
-                            yield return null;
                             if (badniks[backgroundIndex].gameObject.activeSelf)
                             {
                                 while ((secondsCount != time - 40) && (secondsCount != time - 20) && (secondsCount != time) && (secondsCount != time + 20) && (secondsCount != time + 40))
@@ -964,7 +964,6 @@ public class sonicKnucklesScript : MonoBehaviour
                         }
                         if (Regex.IsMatch(parameters[1], @"^\s*hero\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                         {
-                            yield return null;
                             if (heroes[heroIndex].gameObject.activeSelf)
                             {
                                 while ((secondsCount != time - 40) && (secondsCount != time - 20) && (secondsCount != time) && (secondsCount != time + 20) && (secondsCount != time + 40))
@@ -981,7 +980,6 @@ public class sonicKnucklesScript : MonoBehaviour
                         }
                         if (Regex.IsMatch(parameters[1], @"^\s*monitor\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
                         {
-                            yield return null;
                             if (monitors[backgroundIndex].gameObject.activeSelf)
                             {
                                 while ((secondsCount != time - 40) && (secondsCount != time - 20) && (secondsCount != time) && (secondsCount != time + 20) && (secondsCount != time + 40))
@@ -1060,11 +1058,11 @@ public class sonicKnucklesScript : MonoBehaviour
         {
             if(parameters.Length == 2)
             {
+                yield return null;
                 if (cmdIsValid2(parameters[1]))
                 {
                     if (boss.gameObject.activeSelf)
                     {
-                        yield return null;
                         int temp = 0;
                         int.TryParse(parameters[1], out temp);
                         for(int i = 0; i < temp; i++)
@@ -1080,6 +1078,8 @@ public class sonicKnucklesScript : MonoBehaviour
                             boss.GetComponent<KMSelectable>().OnInteract();
                             yield return new WaitForSeconds(0.5f);
                         }
+                        yield return new WaitForSeconds(0.1f);
+                        if (moduleSolved) { yield return "solve"; }
                     }
                     else
                     {
@@ -1097,11 +1097,11 @@ public class sonicKnucklesScript : MonoBehaviour
         {
             if (parameters.Length == 2)
             {
+                yield return null;
                 if (cmdIsValid2(parameters[1]))
                 {
                     if (boss.gameObject.activeSelf)
                     {
-                        yield return null;
                         int temp = 0;
                         int.TryParse(parameters[1], out temp);
                         for (int i = 0; i < temp; i++)
@@ -1116,6 +1116,8 @@ public class sonicKnucklesScript : MonoBehaviour
                             }
                             boss.GetComponent<KMSelectable>().OnInteract();
                         }
+                        yield return new WaitForSeconds(0.1f);
+                        if (moduleSolved) { yield return "solve"; }
                     }
                     else
                     {
@@ -1129,5 +1131,74 @@ public class sonicKnucklesScript : MonoBehaviour
             }
             yield break;
         }
+    }
+
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        if (!timerStarted)
+        {
+            logo.OnInteract();
+        }
+        while (!timerStarted) { yield return new WaitForSeconds(0.01f); }
+        if(boss.gObject.activeSelf == false)
+        {
+            string temp = "";
+            for(int i = 0; i < monitors.Length; i++)
+            {
+                if (monitors[i].containsIllegalSound)
+                {
+                    temp = "monitor";
+                    while (!(secondsCount == (ringCount % 20)) && !(secondsCount == (ringCount % 20) + 20) && !(secondsCount == (ringCount % 20) + 40))
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                    monitors[i].selectable.OnInteract();
+                    break;
+                }
+            }
+            if (temp.Equals(""))
+            {
+                for (int i = 0; i < badniks.Length; i++)
+                {
+                    if (badniks[i].containsIllegalSound)
+                    {
+                        temp = "badnik";
+                        while (!(secondsCount == (ringCount % 20)) && !(secondsCount == (ringCount % 20) + 20) && !(secondsCount == (ringCount % 20) + 40))
+                        {
+                            yield return new WaitForSeconds(0.1f);
+                        }
+                        badniks[i].selectable.OnInteract();
+                        break;
+                    }
+                }
+                if (temp.Equals(""))
+                {
+                    for (int i = 0; i < heroes.Length; i++)
+                    {
+                        if (heroes[i].containsIllegalSound)
+                        {
+                            temp = "hero";
+                            while (!(secondsCount == (ringCount % 20)) && !(secondsCount == (ringCount % 20) + 20) && !(secondsCount == (ringCount % 20) + 40))
+                            {
+                                yield return new WaitForSeconds(0.1f);
+                            }
+                            heroes[i].selectable.OnInteract();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if(correctHitTime == 0)
+        {
+            yield return ProcessTwitchCommand("even " + (hitsRequired - 1));
+            yield return ProcessTwitchCommand("odd 1");
+        }
+        else
+        {
+            yield return ProcessTwitchCommand("odd " + (hitsRequired - 1));
+            yield return ProcessTwitchCommand("even 1");
+        }
+        while (boss.gameObject.activeSelf == true) { yield return true; yield return new WaitForSeconds(0.01f); }
     }
 }
