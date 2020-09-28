@@ -13,7 +13,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   id: sonicKnuckles
   title: Sonic & Knuckles
-  description: 'Sonic & Knuckles 1.03
+  description: 'Sonic & Knuckles 1.1
 
     Sonic the Hedgehog was a popular 16-bit video game from... Wait a minute; this
     isn''t Sonic the Hedgehog. Are SEGA on commission or something?
@@ -31,6 +31,6 @@ MonoBehaviour:
 
 
     Manual available here: https://ktane.timwi.de/HTML/Sonic%20%26%20Knuckles.html'
-  version: 1.03
+  version: 1.1
   outputFolder: build
   previewImage: {fileID: 2800000, guid: 4a4d9613361294eadac1600d6978c9a4, type: 3}
