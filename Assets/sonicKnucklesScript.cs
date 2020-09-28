@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using sonicKnuckles;
 
@@ -860,5 +861,344 @@ public class sonicKnucklesScript : MonoBehaviour
         gameOver.gameObject.SetActive(false);
         Start();
         StartCoroutine(StingCoroutine());
+    }
+
+    //twitch plays
+    private bool cmdIsValid(string cmd)
+    {
+        char[] valids = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        if (cmd.Length == 2)
+        {
+            foreach (char c in cmd)
+            {
+                if (!valids.Contains(c))
+                {
+                    return false;
+                }
+            }
+            int temp = 0;
+            int.TryParse(cmd, out temp);
+            if (temp < 0 || temp > 59)
+            {
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    private bool cmdIsValid2(string cmd)
+    {
+        char[] valids = { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        if (cmd.Length >= 1 && cmd.Length <= 2)
+        {
+            foreach (char c in cmd)
+            {
+                if (!valids.Contains(c))
+                {
+                    return false;
+                }
+            }
+            int temp = 0;
+            int.TryParse(cmd, out temp);
+            if (temp < 1 || temp > 10)
+            {
+                return false;
+            }
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    #pragma warning disable 414
+    private readonly string TwitchHelpMessage = @"!{0} start [Starts the module] | !{0} press <badnik/monitor/hero> [Presses the specified object] | !{0} press <badnik/monitor/hero> at <##> [Presses the specified object when the seconds digits on the game's timer are '##', '##'+or-20, or '##'+or-40] | !{0} even/odd <#> [Presses Dr. Robotnik '#' times when the last digit of the game's timer is even or odd]";
+    #pragma warning restore 414
+    IEnumerator ProcessTwitchCommand(string command)
+    {
+        if (Regex.IsMatch(command, @"^\s*start\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            yield return null;
+            if (logo.gameObject.activeSelf)
+            {
+                logo.OnInteract();
+            }
+            else
+            {
+                yield return "sendtochaterror A game of Sonic & Knuckles has already been started!";
+            }
+            yield break;
+        }
+        string[] parameters = command.Split(' ');
+        if (Regex.IsMatch(parameters[0], @"^\s*press\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            if(parameters.Length == 4)
+            {
+                if(Regex.IsMatch(parameters[2], @"^\s*at\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                {
+                    yield return null;
+                    if (cmdIsValid(parameters[3]))
+                    {
+                        int time = 0;
+                        int.TryParse(parameters[3], out time);
+                        if (Regex.IsMatch(parameters[1], @"^\s*badnik\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                        {
+                            if (badniks[backgroundIndex].gameObject.activeSelf)
+                            {
+                                while ((secondsCount != time - 40) && (secondsCount != time - 20) && (secondsCount != time) && (secondsCount != time + 20) && (secondsCount != time + 40))
+                                {
+                                    yield return new WaitForSeconds(0.1f);
+                                    yield return "trycancel The Badnik press was cancelled due to a cancel request.";
+                                }
+                                badniks[backgroundIndex].GetComponent<KMSelectable>().OnInteract();
+                            }
+                            else
+                            {
+                                yield return "sendtochaterror The Badnik cannot be pressed right now!";
+                            }
+                        }
+                        if (Regex.IsMatch(parameters[1], @"^\s*hero\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                        {
+                            if (heroes[heroIndex].gameObject.activeSelf)
+                            {
+                                while ((secondsCount != time - 40) && (secondsCount != time - 20) && (secondsCount != time) && (secondsCount != time + 20) && (secondsCount != time + 40))
+                                {
+                                    yield return new WaitForSeconds(0.1f);
+                                    yield return "trycancel The Hero press was cancelled due to a cancel request.";
+                                }
+                                heroes[heroIndex].GetComponent<KMSelectable>().OnInteract();
+                            }
+                            else
+                            {
+                                yield return "sendtochaterror The Hero cannot be pressed right now!";
+                            }
+                        }
+                        if (Regex.IsMatch(parameters[1], @"^\s*monitor\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                        {
+                            if (monitors[backgroundIndex].gameObject.activeSelf)
+                            {
+                                while ((secondsCount != time - 40) && (secondsCount != time - 20) && (secondsCount != time) && (secondsCount != time + 20) && (secondsCount != time + 40))
+                                {
+                                    yield return new WaitForSeconds(0.1f);
+                                    yield return "trycancel The Monitor press was cancelled due to a cancel request.";
+                                }
+                                monitors[backgroundIndex].GetComponent<KMSelectable>().OnInteract();
+                            }
+                            else
+                            {
+                                yield return "sendtochaterror The Monitor cannot be pressed right now!";
+                            }
+                        }
+                    }
+                    else
+                    {
+                        yield return "sendtochaterror The specified time is invalid! Valid times are between 00 and 59!";
+                    }
+                }
+            }
+            else if(parameters.Length == 2)
+            {
+                if (Regex.IsMatch(parameters[1], @"^\s*badnik\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                {
+                    yield return null;
+                    if (badniks[backgroundIndex].gameObject.activeSelf)
+                    {
+                        while ((secondsCount == (ringCount % 20)) || (secondsCount == (ringCount % 20) + 20) || (secondsCount == (ringCount % 20) + 40))
+                        {
+                            yield return new WaitForSeconds(0.1f);
+                        }
+                        badniks[backgroundIndex].GetComponent<KMSelectable>().OnInteract();
+                    }
+                    else
+                    {
+                        yield return "sendtochaterror The Badnik cannot be pressed right now!";
+                    }
+                }
+                if (Regex.IsMatch(parameters[1], @"^\s*hero\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                {
+                    yield return null;
+                    if (heroes[heroIndex].gameObject.activeSelf)
+                    {
+                        while ((secondsCount == (ringCount % 20)) || (secondsCount == (ringCount % 20) + 20) || (secondsCount == (ringCount % 20) + 40))
+                        {
+                            yield return new WaitForSeconds(0.1f);
+                        }
+                        heroes[heroIndex].GetComponent<KMSelectable>().OnInteract();
+                    }
+                    else
+                    {
+                        yield return "sendtochaterror The Hero cannot be pressed right now!";
+                    }
+                }
+                if (Regex.IsMatch(parameters[1], @"^\s*monitor\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+                {
+                    yield return null;
+                    if (monitors[backgroundIndex].gameObject.activeSelf)
+                    {
+                        while ((secondsCount == (ringCount % 20)) || (secondsCount == (ringCount % 20) + 20) || (secondsCount == (ringCount % 20) + 40))
+                        {
+                            yield return new WaitForSeconds(0.1f);
+                        }
+                        monitors[backgroundIndex].GetComponent<KMSelectable>().OnInteract();
+                    }
+                    else
+                    {
+                        yield return "sendtochaterror The Monitor cannot be pressed right now!";
+                    }
+                }
+            }
+            yield break;
+        }
+        if (Regex.IsMatch(parameters[0], @"^\s*even\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            if(parameters.Length == 2)
+            {
+                yield return null;
+                if (cmdIsValid2(parameters[1]))
+                {
+                    if (boss.gameObject.activeSelf)
+                    {
+                        int temp = 0;
+                        int.TryParse(parameters[1], out temp);
+                        for(int i = 0; i < temp; i++)
+                        {
+                            while (hitting == true)
+                            {
+                                yield return new WaitForSeconds(0.1f);
+                            }
+                            while (secondsCount % 2 != 0)
+                            {
+                                yield return new WaitForSeconds(0.1f);
+                            }
+                            boss.GetComponent<KMSelectable>().OnInteract();
+                            yield return new WaitForSeconds(0.5f);
+                        }
+                        yield return new WaitForSeconds(0.1f);
+                        if (moduleSolved) { yield return "solve"; }
+                    }
+                    else
+                    {
+                        yield return "sendtochaterror Dr. Robotnik cannot be hit right now!";
+                    }
+                }
+                else
+                {
+                    yield return "sendtochaterror The number of times to hit Dr. Robotnik is invalid! Valid number of times are between 1 and 10!";
+                }
+            }
+            yield break;
+        }
+        if (Regex.IsMatch(parameters[0], @"^\s*odd\s*$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant))
+        {
+            if (parameters.Length == 2)
+            {
+                yield return null;
+                if (cmdIsValid2(parameters[1]))
+                {
+                    if (boss.gameObject.activeSelf)
+                    {
+                        int temp = 0;
+                        int.TryParse(parameters[1], out temp);
+                        for (int i = 0; i < temp; i++)
+                        {
+                            while(hitting == true)
+                            {
+                                yield return new WaitForSeconds(0.1f);
+                            }
+                            while (secondsCount % 2 == 0)
+                            {
+                                yield return new WaitForSeconds(0.1f);
+                            }
+                            boss.GetComponent<KMSelectable>().OnInteract();
+                        }
+                        yield return new WaitForSeconds(0.1f);
+                        if (moduleSolved) { yield return "solve"; }
+                    }
+                    else
+                    {
+                        yield return "sendtochaterror Dr. Robotnik cannot be hit right now!";
+                    }
+                }
+                else
+                {
+                    yield return "sendtochaterror The number of times to hit Dr. Robotnik is invalid! Valid number of times are between 1 and 10!";
+                }
+            }
+            yield break;
+        }
+    }
+
+    IEnumerator TwitchHandleForcedSolve()
+    {
+        if (!timerStarted)
+        {
+            logo.OnInteract();
+        }
+        while (!timerStarted) { yield return new WaitForSeconds(0.01f); }
+        if(boss.gObject.activeSelf == false)
+        {
+            string temp = "";
+            for(int i = 0; i < monitors.Length; i++)
+            {
+                if (monitors[i].containsIllegalSound)
+                {
+                    temp = "monitor";
+                    while (!(secondsCount == (ringCount % 20)) && !(secondsCount == (ringCount % 20) + 20) && !(secondsCount == (ringCount % 20) + 40))
+                    {
+                        yield return new WaitForSeconds(0.1f);
+                    }
+                    monitors[i].selectable.OnInteract();
+                    break;
+                }
+            }
+            if (temp.Equals(""))
+            {
+                for (int i = 0; i < badniks.Length; i++)
+                {
+                    if (badniks[i].containsIllegalSound)
+                    {
+                        temp = "badnik";
+                        while (!(secondsCount == (ringCount % 20)) && !(secondsCount == (ringCount % 20) + 20) && !(secondsCount == (ringCount % 20) + 40))
+                        {
+                            yield return new WaitForSeconds(0.1f);
+                        }
+                        badniks[i].selectable.OnInteract();
+                        break;
+                    }
+                }
+                if (temp.Equals(""))
+                {
+                    for (int i = 0; i < heroes.Length; i++)
+                    {
+                        if (heroes[i].containsIllegalSound)
+                        {
+                            temp = "hero";
+                            while (!(secondsCount == (ringCount % 20)) && !(secondsCount == (ringCount % 20) + 20) && !(secondsCount == (ringCount % 20) + 40))
+                            {
+                                yield return new WaitForSeconds(0.1f);
+                            }
+                            heroes[i].selectable.OnInteract();
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        if(correctHitTime == 0)
+        {
+            yield return ProcessTwitchCommand("even " + (hitsRequired - 1));
+            yield return ProcessTwitchCommand("odd 1");
+        }
+        else
+        {
+            yield return ProcessTwitchCommand("odd " + (hitsRequired - 1));
+            yield return ProcessTwitchCommand("even 1");
+        }
+        while (boss.gameObject.activeSelf == true) { yield return true; yield return new WaitForSeconds(0.01f); }
     }
 }
